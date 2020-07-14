@@ -20,6 +20,7 @@ export function voronoiMapSimulation(data) {
   var DEFAULT_INITIAL_POSITION = randomInitialPosition();
   var DEFAULT_INITIAL_WEIGHT = halfAverageAreaInitialWeight();
   var RANDOM_INITIAL_POSITION = randomInitialPosition();
+  var MAX_OVERWEIGHT_LOOP_COUNT = 1000;
   var epsilon = 1;
   //end: constants
 
@@ -120,6 +121,16 @@ export function voronoiMapSimulation(data) {
       }
 
       minWeightRatio = _;
+      shouldInitialize = true;
+      return simulation;
+    },
+
+    overweightedAlgorithm: function(_) {
+      if (!arguments.length) {
+        return handleOverweightedVariant;
+      }
+
+      handleOverweightedVariant = _;
       shouldInitialize = true;
       return simulation;
     },
@@ -314,7 +325,8 @@ export function voronoiMapSimulation(data) {
     polygons = weightedVoronoi(adaptedMapPoints);
     if (polygons.length < siteCount) {
       console.log('at least 1 site has no area, which is not supposed to arise');
-      debugger;
+      // debugger;
+      throw Error('bad_polygons');
     }
 
     adaptWeights(polygons, flickeringMitigationRatio);
@@ -324,7 +336,8 @@ export function voronoiMapSimulation(data) {
     polygons = weightedVoronoi(adaptedMapPoints);
     if (polygons.length < siteCount) {
       console.log('at least 1 site has no area, which is not supposed to arise');
-      debugger;
+      // debugger;
+      throw Error('bad_polygons');
     }
 
     return polygons;
@@ -367,6 +380,10 @@ export function voronoiMapSimulation(data) {
     flickeringMitigation = flickeringInfluence * flickeringMitigationRatio;
     for (var i = 0; i < siteCount; i++) {
       polygon = polygons[i];
+      if (!polygon) {
+        console.error('bug!', siteCount, i)
+        throw Error('not enough polygons returned from weightedVoronoi!')
+      }
       mapPoint = polygon.site.originalObject;
       currentArea = d3PolygonArea(polygon);
       adaptRatio = mapPoint.targetedArea / currentArea;
@@ -413,6 +430,10 @@ export function voronoiMapSimulation(data) {
             weightest.weight = adaptedWeight;
             fixApplied = true;
             fixCount++;
+            if (fixCount > MAX_OVERWEIGHT_LOOP_COUNT) {
+              console.log(`Aborting as handleOverweighted0 is looping too much: ${fixCount}`, siteCount);
+              throw Error('overweight_loop');
+            }
             break;
           }
         }
@@ -452,6 +473,10 @@ export function voronoiMapSimulation(data) {
             lightest.weight += overweight + epsilon;
             fixApplied = true;
             fixCount++;
+            if (fixCount > MAX_OVERWEIGHT_LOOP_COUNT) {
+              console.log(`Aborting as handleOverweighted1 is looping too much: ${fixCount}`, siteCount);
+              throw Error('overweight_loop');
+            }
             break;
           }
         }

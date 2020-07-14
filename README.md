@@ -1,5 +1,17 @@
 # d3-voronoi-map
 
+## Fork by kornysietsma
+
+I've added a few things:
+
+- You can choose an overweighted algorithm by calling `simulation.overweightedAlgorithm(0 or 1)` - it seems algorithm 1 is less stable, this lets you revert to algorithm 0
+- Both overweighted algorithms check for infinite loops and throw an error if they seem to be stuck - it throws `Error('overweight_loop')` so you can catch and retry.
+- If the weightedVoronoi call truncates the polygon list, the algorithm throws `Error('bad_polygons')` so you can catch and retry.
+
+These changes allow my offline voronoi layout code to try several different approaches when the defaults fail or time out.
+
+## Original readme
+
 This D3 plugin produces a _Voronoï map_ (i.e. one-level treemap). Given a convex polygon and weighted data, it tesselates/partitions the polygon in several inner cells, such that the area of a cell represents the weight of the underlying datum.
 
 Because a picture is worth a thousand words:

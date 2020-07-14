@@ -39,6 +39,6 @@
     "d3-dispatch": "1.*",
     "d3-polygon": "1.*",
     "d3-timer": "1.*",
-    "d3-weighted-voronoi": "1.*"
+    "d3-weighted-voronoi": "git://github.com/kornysietsma/d3-weighted-voronoi.git"
   }
 }
