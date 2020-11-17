@@ -1,5 +1,7 @@
 # d3-voronoi-map
 
+## DEPRECATED - this fork is no longer needed as the upstream project has fixed the bugs I was working around
+
 ## Fork by kornysietsma
 
 I've added a few things:
